@@ -6,7 +6,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN CGO_ENABLED=0 go build -o logApp ./cmd/api
+RUN CGO_ENABLED=0 go build -buildvcs=false -o logApp ./cmd/api
 
 RUN chmod +x /app/logApp
 

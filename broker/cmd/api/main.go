@@ -11,16 +11,19 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const webPort = "80"
 
 type Config struct {
-	AuthClient   client.AuthClient
-	LoggerClient client.LoggerClient
-	MailerClient client.MailerClient
-	LogRPCClient client.LogRPCClient
-	LogProducer  event.Producer
+	AuthClient    client.AuthClient
+	LoggerClient  client.LoggerClient
+	MailerClient  client.MailerClient
+	LogRPCClient  client.LogRPCClient
+	LogGRPCClient *client.LogGRPCClient
+	LogProducer   event.Producer
 }
 
 func main() {
@@ -33,12 +36,14 @@ func main() {
 	if err != nil {
 		log.Panic("Failed to connect to rabbit mq", err)
 	}
+	grpcConnection := createGRPCConnection()
 	app := Config{
-		AuthClient:   client.NewAuthClient(),
-		LoggerClient: client.NewLoggerClient(),
-		MailerClient: client.NewMailerClient(),
-		LogRPCClient: client.NewLogRPCClient(),
-		LogProducer:  producer,
+		AuthClient:    client.NewAuthClient(),
+		LoggerClient:  client.NewLoggerClient(),
+		MailerClient:  client.NewMailerClient(),
+		LogRPCClient:  client.NewLogRPCClient(),
+		LogGRPCClient: client.NewLogGRPCClient(grpcConnection),
+		LogProducer:   producer,
 	}
 	log.Printf("Starting broker service on port %s \n", webPort)
 	srv := &http.Server{
@@ -49,6 +54,18 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func createGRPCConnection() *grpc.ClientConn {
+	log.Println("starting GRPC connection on 50001")
+	connection, err := grpc.Dial("log:50001",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock())
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Println("started GRPC connection")
+	return connection
 }
 
 func connect() (*amqp.Connection, error) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"log/data"
+	"log/logs"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -12,6 +13,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -39,17 +41,34 @@ func main() {
 			panic(err)
 		}
 	}()
-	models := data.New(mongoClient)
+	logRepo := data.New(mongoClient)
 	app := Config{
-		LogRepo: models,
+		LogRepo: logRepo,
 	}
-	rpcServer := NewRPCServer(models)
+	rpcServer := NewRPCServer(logRepo)
 	err = rpc.Register(rpcServer)
 	if err != nil {
 		log.Println("error in registering rpc server", err)
 	}
+	go app.startGRPC(logRepo)
 	go app.startRPC()
 	app.Serve()
+}
+
+func (app *Config) startGRPC(logRepo data.LogRepo) {
+	log.Println("starting grpc server")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
+	if err != nil {
+		log.Panic("failed to start grpc server", err)
+	}
+	server := grpc.NewServer()
+	logGrpcServer := NewLogsGRPCServer(logRepo)
+	logs.RegisterLogServiceServer(server, logGrpcServer)
+	log.Println("started grpc server successfully")
+
+	if err = server.Serve(listener); err != nil {
+		log.Panic("failed to start grpc server", err)
+	}
 }
 
 func (app *Config) startRPC() {

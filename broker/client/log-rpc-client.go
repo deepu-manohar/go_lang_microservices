@@ -20,11 +20,13 @@ type RPCResponse struct {
 }
 
 func NewLogRPCClient() LogRPCClient {
+	log.Println("starting rpc client on 5001")
 	client, err := rpc.Dial("tcp", "log:5001")
 	if err != nil {
 		log.Panic("failed to initialze rpc client ", err)
 		return LogRPCClient{}
 	}
+	log.Println("started rpc client successfully")
 	return LogRPCClient{
 		rpcClient: client,
 	}

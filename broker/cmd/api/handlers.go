@@ -53,6 +53,9 @@ func (app *Config) log(w http.ResponseWriter, r *http.Request) {
 	log.Println("pushing log event to rpc")
 	app.LogRPCClient.SendLog(loggingRequest)
 	log.Println("done pushing log event to rpc")
+	log.Println("pushing log event to GRPC")
+	app.LogGRPCClient.SendLog(loggingRequest)
+	log.Println("done pushing log event to GRPC")
 	// loggingResponse := app.LoggerClient.log(LogRequest{
 	// 	Name: loggingRequest.Name,
 	// 	Data: loggingRequest.Data,
