@@ -1,0 +1,11 @@
+go 1.21.5
+
+use ..\broker
+
+use ..\authentication-service
+
+use ..\frontend
+
+use ..\commons
+
+use ..\log
