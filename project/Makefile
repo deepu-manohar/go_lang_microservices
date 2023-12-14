@@ -5,6 +5,7 @@ AUTH_BINARY=authApp
 LOG_BINARY=logApp
 MAIL_BINARY=mailerApp
 LISTENER_BINARY=listenerApp
+FRONTEND_BINARY=frotnendApp
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -26,11 +27,22 @@ down:
 	docker-compose down
 	@echo Done!
 
+build_frotnend:
+	@echo Building Frontend binary...
+	chdir ..\frontend && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -buildvcs=false -o ${FRONTEND_BINARY} ./cmd/web
+	@echo Done!
+
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
 	@echo Building broker binary...
 	chdir ..\broker && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -buildvcs=false -o ${BROKER_BINARY} ./cmd/api
 	@echo Done!
+
+up_down_broker: build_broker
+	@echo Stopping broker containers
+	docker-compose rm -sv broker
+	@echo broker is down, bringing it up
+	docker-compose up --build -d broker
 
 ## build_auth: builds the broker binary as a linux executable
 build_auth:
@@ -60,7 +72,7 @@ build_front:
 	@echo Done!
 
 ## build: build all projects
-build: build_broker build_auth build_front build_log build_mail build_listener
+build: build_broker build_auth build_front build_log build_mail build_listener build_frotnend
 	@echo Done building all project!!
 
 ## start: starts the front end

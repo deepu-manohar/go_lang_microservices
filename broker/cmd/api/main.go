@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const webPort = "80"
+const webPort = "8080"
 
 type Config struct {
 	AuthClient    client.AuthClient

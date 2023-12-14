@@ -46,7 +46,7 @@
                 method:'POST', 
                 body: JSON.stringify({message: "Hello From UI!", sender: "Your friendly developer!!"})
             }
-            fetch("http:\/\/localhost:8080/", body)
+            fetch({{print .BrokerURL}}, body)
             .then((response)=>response.json())
             .then((data)=>{
                 payload.innerHTML += JSON.stringify({message: "Hello From UI!", sender: "Your friendly developer!!"});
@@ -66,7 +66,7 @@
                 body: JSON.stringify({email: "admin@example.com", password: "verysecret"}),
                 headers: headers
             }
-            fetch("http:\/\/localhost:8080/signin", body)
+            fetch({{print .BrokerURL "signin"}}, body)
             .then((response)=>response.json())
             .then((data)=>{
                 payload.innerHTML += JSON.stringify({email: "admin@example.com", password: "verysecret"});
@@ -85,7 +85,7 @@
                 body: JSON.stringify({name: "sample logger", data: "sample log data "}),
                 headers: headers
             }
-            fetch("http:\/\/localhost:8080/log", body)
+            fetch({{print .BrokerURL "log"}}, body)
             .then((response)=>response.json())
             .then((data)=>{
                 payload.innerHTML += JSON.stringify({name: "sample logger", data: "sample log data "});
@@ -104,7 +104,7 @@
                 body: JSON.stringify({from: "admin@middle_earth.com", to: "folks@middle_earth.com", subject: "Black rider", message:"Please be inside home"}),
                 headers: headers
             }
-            fetch("http:\/\/localhost:8080/mail/send", body)
+            fetch({{print .BrokerURL "mail/send"}}, body)
             .then((response)=>response.json())
             .then((data)=>{
                 payload.innerHTML += JSON.stringify({from: "admin@middle_earth.com", to: "folks@middle_earth.com", subject: "Black rider", message:"Please be inside home"});

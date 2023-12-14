@@ -21,7 +21,8 @@ func NewLogGRPCClient(grpcConnection *grpc.ClientConn) *LogGRPCClient {
 }
 
 func (l *LogGRPCClient) SendLog(request common.BrokerLogRequest) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	logResponse, err := l.LogServiceClient.SendLog(ctx, &logs.LogRequest{
 		LogEntry: &logs.Log{
 			Name: request.Name,

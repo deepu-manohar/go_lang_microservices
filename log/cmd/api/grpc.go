@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/data"
 	"log/logs"
 )
@@ -17,6 +18,7 @@ func NewLogsGRPCServer(logRepo data.LogRepo) *LogGrpcServer {
 
 func (l *LogGrpcServer) SendLog(ctx context.Context, request *logs.LogRequest) (*logs.LogResponse, error) {
 	req := request.LogEntry
+	log.Println("Got request in GRPC ", req)
 	logEntry := data.LogEntry{
 		Name: req.Name,
 		Data: req.Data,
