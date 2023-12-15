@@ -17,9 +17,14 @@ Consists of following
 13. Kubernetes support
 
 # TO Start Services
-goto /project folder
-run the command = "make down up_build"
-To create the rabbitmq exchange -
+- goto /project folder
+- run the command = "make down up_build"
+
+# To create the rabbitmq exchange
 - goto "localhost:15672"
 - goto exchanges tab
 - create exchange logs_topic (durable)
+
+# Verificaiton
+- The UI should be up in localhost:8081
+- The broker should be up in localhost:8080
