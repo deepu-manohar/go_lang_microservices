@@ -55,25 +55,20 @@ func (authClient *AuthClient) SignUp(request common.AuthRequest) common.AuthResp
 		return authResponse
 	}
 	defer response.Body.Close()
-	if response.StatusCode == http.StatusUnauthorized {
-		authResponse.Message = "user is unauthorised"
-		authResponse.Status = http.StatusUnauthorized
-		return authResponse
-	} else if response.StatusCode != http.StatusOK {
-		data := make([]byte, 99999)
-		response.Body.Read(data)
-		log.Println(string(data))
-		authResponse.Message = "failed calling auth service"
-		return authResponse
-	}
 	err = json.NewDecoder(response.Body).Decode(&authResponse)
+	log.Printf("Got response from auth service %+v", authResponse)
 	if err != nil {
 		authResponse.Error = true
 		authResponse.Message = "unexpected error"
 		authResponse.Status = http.StatusInternalServerError
 		return authResponse
-	} else if authResponse.Error {
+	} else if authResponse.Error || response.StatusCode == http.StatusUnauthorized {
+		return authResponse
+	} else if response.StatusCode != http.StatusOK {
+		log.Println(authResponse)
+		authResponse.Message = "failed calling auth service"
 		return authResponse
 	}
+
 	return authResponse
 }

@@ -88,7 +88,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	defer cancel()
 
 	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at from users where email = $1`
-
+	log.Println("Querying for user by email %s", email)
 	var user User
 	row := db.QueryRowContext(ctx, query, email)
 
@@ -104,6 +104,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	)
 
 	if err != nil {
+		log.Println("error during user fetch", err)
 		return nil, err
 	}
 
