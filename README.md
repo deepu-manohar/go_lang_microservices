@@ -14,3 +14,12 @@ Consists of following
 10. GRPC support
 11. REST support
 12. Docker support
+13. Kubernetes support
+
+# TO Start Services
+goto /project folder
+run the command = "make down up_build"
+To create the rabbitmq exchange -
+- goto "localhost:15672"
+- goto exchanges tab
+- create exchange logs_topic (durable)
